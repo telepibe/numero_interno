@@ -14,9 +14,10 @@ fi
 # Loads $tels array with lines of file. Keeps newlines.
 mapfile tels <db.txt
 
-# $search in caps and captures int number (not needed actually)
+# $search in caps and captures extension number (not needed actually)
 regex=".*${search^^}.*([0-9]{4})"
 
+# ${BASH_REMATCH[1]} has extension number
 for interno in "${tels[@]}"; do
 	[[ ${interno^^} =~ $regex ]] && echo "${BASH_REMATCH[0]}"
 done

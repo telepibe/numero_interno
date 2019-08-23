@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Requires bash >4
-set -- iri
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -23,7 +22,8 @@ shopt_match_status=( $(shopt -p nocasematch || true) )
 shopt -s nocasematch
 
 for interno in "${tels[@]}"; do
-	[[ ${interno} =~ $regex ]] && echo "${BASH_REMATCH[0]}"
+	# supress extra newline
+	[[ ${interno} =~ $regex ]] && echo -n "${BASH_REMATCH[0]}"
 done
 
 # Go back to how it was before

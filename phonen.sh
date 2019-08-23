@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+# Requires bash >4
+set -- iri
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -14,10 +15,16 @@ fi
 # Loads $tels array with lines of file. Keeps newlines.
 mapfile tels <db.txt
 
-# $search in caps and captures extension number (not needed actually)
-regex=".*${search^^}.*([0-9]{4})"
+regex=".*${search}.*"
 
-# ${BASH_REMATCH[1]} has extension number
+# shopt will return 1 if is not set
+shopt_match_status=( $(shopt -p nocasematch || true) )
+
+shopt -s nocasematch
+
 for interno in "${tels[@]}"; do
-	[[ ${interno^^} =~ $regex ]] && echo "${BASH_REMATCH[0]}"
+	[[ ${interno} =~ $regex ]] && echo "${BASH_REMATCH[0]}"
 done
+
+# Go back to how it was before
+${shopt_match_status[*]}

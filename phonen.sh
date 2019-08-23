@@ -18,8 +18,13 @@ mapfile tels <${actual_dir}/db.txt
 
 regex=".*${search}.*"
 
+_ifs=$IFS
+IFS=' ' # else shopt_match_status has one element
+
 # shopt will return 1 if is not set
 shopt_match_status=( $(shopt -p nocasematch || true) )
+
+IFS=$_ifs
 
 shopt -s nocasematch
 

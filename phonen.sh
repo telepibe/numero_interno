@@ -29,8 +29,8 @@ IFS=$_ifs
 shopt -s nocasematch
 declare -i match=0
 for interno in "${tels[@]}"; do
-	# supress extra newline
 	if [[ ${interno} =~ $regex ]];then
+		# supress extra newline
 		echo -n "${BASH_REMATCH[0]}"
 		match+=1
 	fi
@@ -41,4 +41,4 @@ ${shopt_match_status[*]}
 
 if (( match==0 )); then
 	exit 1
-fi 
+fi

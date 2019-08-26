@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Requires bash >4
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -16,16 +17,28 @@ actual_dir="$( dirname "$( readlink -f "$0")")"
 # Loads $tels array with lines of file. Keeps newlines.
 mapfile tels <"${actual_dir}/db.txt"
 
-# $search in caps and captures extension number (not needed actually)
-regex=".*${search^^}.*([0-9]{4})"
+regex=".*${search}.*"
 
+_ifs=$IFS
+IFS=' ' # else shopt_match_status has one element
+
+# shopt will return 1 if is not set
+shopt_match_status=( $(shopt -p nocasematch || true) )
+
+IFS=$_ifs
+
+shopt -s nocasematch
 declare -i match=0
 for interno in "${tels[@]}"; do
-	if [[ ${interno^^} =~ $regex ]]; then
-	 	echo "${BASH_REMATCH[0]}"
+	if [[ ${interno} =~ $regex ]]; then
+		# supress extra newline
+		echo -n "${BASH_REMATCH[0]}"
 		match+=1
-	fi 
+	fi
 done
+
+# Go back to how it was before
+${shopt_match_status[*]}
 
 if (( match==0 )); then
 	exit 1

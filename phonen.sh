@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Requires bash >4
+
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -29,7 +30,7 @@ IFS=$_ifs
 shopt -s nocasematch
 declare -i match=0
 for interno in "${tels[@]}"; do
-	if [[ ${interno} =~ $regex ]];then
+	if [[ ${interno} =~ $regex ]]; then
 		# supress extra newline
 		echo -n "${BASH_REMATCH[0]}"
 		match+=1

@@ -2,7 +2,7 @@
 # Requires bash >4
 set -euo pipefail
 IFS=$'\n\t'
-
+set -- zzz
 # $search defaults to empty string if its not defined.
 search=${1:-}
 
@@ -27,11 +27,18 @@ shopt_match_status=( $(shopt -p nocasematch || true) )
 IFS=$_ifs
 
 shopt -s nocasematch
-
+declare -i match=0
 for interno in "${tels[@]}"; do
 	# supress extra newline
-	[[ ${interno} =~ $regex ]] && echo -n "${BASH_REMATCH[0]}"
+	if [[ ${interno} =~ $regex ]];then
+		echo -n "${BASH_REMATCH[0]}"
+		match+=1
+	fi
 done
 
 # Go back to how it was before
 ${shopt_match_status[*]}
+
+if (( match==0 )); then
+	exit 1
+fi 

@@ -14,12 +14,19 @@ fi
 actual_dir="$( dirname "$( readlink -f "$0")")"
 
 # Loads $tels array with lines of file. Keeps newlines.
-mapfile tels <${actual_dir}/db.txt
+mapfile tels <"${actual_dir}/db.txt"
 
 # $search in caps and captures extension number (not needed actually)
 regex=".*${search^^}.*([0-9]{4})"
 
-# ${BASH_REMATCH[1]} has extension number
+declare -i match=0
 for interno in "${tels[@]}"; do
-	[[ ${interno^^} =~ $regex ]] && echo "${BASH_REMATCH[0]}"
+	if [[ ${interno^^} =~ $regex ]]; then
+	 	echo "${BASH_REMATCH[0]}"
+		match+=1
+	fi 
 done
+
+if (( match==0 )); then
+	exit 1
+fi

@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Requires bash >4
 
+# Bash unofficial strict mode
 set -euo pipefail
 IFS=$'\n\t'
+
+db="db.example"
 
 # $search defaults to empty string if its not defined.
 search=${1:-}
@@ -15,17 +18,21 @@ fi
 actual_dir="$( dirname "$( readlink -f "$0")")"
 
 # Loads $tels array with lines of file. Keeps newlines.
-mapfile tels <"${actual_dir}/db.txt"
+mapfile tels <"${actual_dir}/${db}"
 
-regex=".*${search}.*"
+# TODO do not take accents into account (fuzzy search?)
+regex=".*${search}.*" 
 
-_ifs=$IFS
-IFS=' ' # else shopt_match_status has one element
+# TODO find a way to set every option without eval
+function return_shopt_status() {
+	local IFS=$' '	# else shopt_status has one element
+	local -n status=$1 # reference by name
+	# shellcheck disable=SC2034
+	status=( $(shopt -p "$2" || true) ) # it's not clear if can fail
+}
 
-# shopt will return 1 if is not set
-shopt_match_status=( $(shopt -p nocasematch || true) )
-
-IFS=$_ifs
+shopt_status=""
+return_shopt_status shopt_status nocasematch
 
 shopt -s nocasematch
 declare -i match=0
@@ -38,7 +45,7 @@ for interno in "${tels[@]}"; do
 done
 
 # Go back to how it was before
-${shopt_match_status[*]}
+${shopt_status[*]}
 
 if (( match==0 )); then
 	exit 1
